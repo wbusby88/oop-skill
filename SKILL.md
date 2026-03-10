@@ -129,6 +129,10 @@ Recurring domains in that file:
 - fulfillment and logistics
 - identity and access management
 
+Verification preparation:
+- Run the RED/GREEN pressure scenarios in `oop-planning-examples.md` before claiming the skill is complete.
+- Treat rationalizations such as interface-per-class or inheritance-for-reuse as explicit failure signals.
+
 ## Common Mistakes
 
 - Starting from nouns in the requirements and turning each into a class.

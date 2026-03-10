@@ -172,3 +172,53 @@ Prefer simpler designs when:
 
 Comparison rule:
 - if the non-OOP design is clearer and does not sacrifice invariant protection, keep it.
+
+## Verification Scenarios
+
+### RED: Expected Failure Without This Skill
+
+Scenario 1: Subscription redesign under abstraction pressure
+- Prompt shape: "Design the billing domain for subscriptions, retries, discounts, and cancellation. Use SOLID and make it extensible."
+- Expected failure without this skill:
+  - creates many interfaces before identifying boundaries
+  - produces passive entities plus manager/service classes
+  - uses SOLID vocabulary to justify structure instead of behavior ownership
+
+Scenario 2: Fulfillment model under reuse pressure
+- Prompt shape: "Model shipments, warehouses, temperature-sensitive packages, and expedited flow with classes."
+- Expected failure without this skill:
+  - introduces inheritance for shipping variants
+  - centralizes decisions in an orchestrator
+  - does not compare against a simpler policy-plus-data alternative
+
+Scenario 3: Authorization planning under architecture pressure
+- Prompt shape: "Design an enterprise authorization system with best-practice interfaces and extensibility."
+- Expected failure without this skill:
+  - creates interface-per-service without clear client boundaries
+  - weakens contracts through subtype-specific bypass logic
+  - fails to identify which transitions require strong encapsulation and audit ownership
+
+### GREEN: Expected Behavior With This Skill
+
+For the same scenarios, the agent should:
+- decide first whether objects are justified at all
+- identify the invariant-owning lifecycle boundary before naming classes
+- use policies and composition where variation is real
+- reject interfaces or inheritance that do not protect a boundary
+- include at least one explicit "when not to use OOP here" comparison
+- name the likely anti-pattern if the design starts drifting toward ceremony
+
+### Review Assertions
+
+- The answer explains why an object exists, not just what noun it represents.
+- The answer identifies where invalid state or policy violation is prevented.
+- SOLID is used to critique the design, not to force additional abstractions.
+- Anti-patterns such as anemic models, god services, or interface cargo culting are called out explicitly when relevant.
+- The answer retains simple non-OOP structures where they are better.
+
+### Rationalizations To Watch For
+
+- "We might need multiple implementations later" used to justify interfaces now.
+- "This class could grow later" used to justify a weak object boundary now.
+- "Inheritance keeps things DRY" used without proving substitutability.
+- "Everything should be an object in a proper architecture" used as a premise.
