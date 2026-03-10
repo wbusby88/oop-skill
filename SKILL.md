@@ -17,6 +17,8 @@ Use this skill to make planning-time OOP decisions before implementation starts,
 - SOLID is being cited, but it is not clear whether it improves the design or just adds ceremony.
 - The problem includes rich domain rules, lifecycle transitions, or policy enforcement and may justify object boundaries.
 
+Do not use this skill for beginner syntax teaching or for forcing an object model onto straightforward data transformation problems.
+
 ## Entry Workflow
 
 1. Decide whether this problem needs objects at all.
@@ -26,10 +28,22 @@ Use this skill to make planning-time OOP decisions before implementation starts,
 5. Check the anti-pattern catalog before approving the plan.
 6. Compare the object-oriented design against a simpler non-OOP alternative.
 
+## Quick Triage
+
+- Use OOP when:
+  - domain rules must be enforced across lifecycle transitions
+  - invariants must survive multiple operations over time
+  - policies need explicit ownership and substitution boundaries
+- Avoid OOP when:
+  - the work is mostly stateless transformation or aggregation
+  - behavior lives naturally in a pipeline, rule table, or pure function layer
+  - proposed classes do not own meaningful state transitions or rule enforcement
+
 ## Section Map
 
 - OOP decision heuristics
 - Behavior and encapsulation heuristics
+- Composition and boundary heuristics
 - SOLID validation lens
 - Review red flags
 - Anti-pattern routing
@@ -42,12 +56,39 @@ Use this skill to make planning-time OOP decisions before implementation starts,
 - Reject classes that only rename nouns from the requirements without gaining control over behavior.
 - Reject interfaces created only to satisfy a pattern rather than a real substitution or boundary need.
 
+Planning questions:
+- What can become invalid if callers bypass this boundary?
+- Which rules need one owner instead of coordination across many helpers?
+- If this object disappeared, would the remaining design become clearer?
+
 ## Behavior and Encapsulation Heuristics
 
 - Put rules where they can be enforced, not where they are convenient to call.
 - A real object should hide invalid state transitions behind methods or policies.
 - If external orchestration scripts know more about valid state than the object itself, encapsulation is weak.
 - If methods only proxy getters, setters, or repository calls, the design is likely anemic.
+
+Strong signals:
+- the object can reject invalid transitions itself
+- related rules cluster around the same lifecycle
+- callers ask for outcomes, not permission to mutate internals
+
+Weak signals:
+- the class mostly exposes mutable fields
+- services outside the object assemble the real business policy
+- every rule needs multiple collaborators because no object owns it
+
+## Composition and Boundary Heuristics
+
+- Prefer composition when behaviors vary independently or are policy-driven.
+- Prefer inheritance only when subtype semantics preserve the same contract and invariants.
+- Use interfaces at boundaries where clients truly depend on a role, capability, or external integration seam.
+- Keep external I/O and domain behavior separate so policy objects are testable without infrastructure noise.
+
+Planning questions:
+- Is this variability semantic or just code reuse?
+- Does this interface protect a boundary, or only satisfy a convention?
+- Would a policy object or pure function be clearer than another service class?
 
 ## SOLID Validation Lens
 
@@ -57,6 +98,8 @@ Use this skill to make planning-time OOP decisions before implementation starts,
 - Interface Segregation: define interfaces around concrete client needs, not around a belief that every class deserves one.
 - Dependency Inversion: invert dependencies around policy boundaries or external systems, not around internal trivia.
 
+Use SOLID after the design exists in rough form. If SOLID is the reason a class or interface exists, the design is probably backwards.
+
 ## Review Red Flags
 
 - Classes hold data while workflows elsewhere enforce the real rules.
@@ -64,6 +107,12 @@ Use this skill to make planning-time OOP decisions before implementation starts,
 - Inheritance is used to share code rather than preserve semantic substitutability.
 - Interface counts are growing faster than meaningful architectural boundaries.
 - The design cannot explain why an object is better than a pure function plus data.
+
+Review questions:
+- Which object owns the most important invariant?
+- Where does invalid state get stopped?
+- Which abstraction disappears if we remove ceremony and keep only behavior?
+- Which part of the design should remain non-OOP because it is simpler that way?
 
 ## Anti-Pattern Routing
 
@@ -74,3 +123,11 @@ Use this skill to make planning-time OOP decisions before implementation starts,
 - For situations where no object model should be introduced, see `When Not to Use OOP`.
 
 Detailed entries, real-world examples, and verification scenarios live in `oop-planning-examples.md`.
+
+## Common Mistakes
+
+- Starting from nouns in the requirements and turning each into a class.
+- Applying SOLID before identifying behavior ownership.
+- Using repositories, managers, and services to carry all domain behavior while entities remain passive.
+- Treating interface-per-class as architecture.
+- Using inheritance to share implementation where composition or functions would be clearer.
