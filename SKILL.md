@@ -124,6 +124,11 @@ Review questions:
 
 Detailed entries, real-world examples, and verification scenarios live in `oop-planning-examples.md`.
 
+Recurring domains in that file:
+- billing and subscriptions
+- fulfillment and logistics
+- identity and access management
+
 ## Common Mistakes
 
 - Starting from nouns in the requirements and turning each into a class.
