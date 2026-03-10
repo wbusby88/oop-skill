@@ -1,0 +1,201 @@
+{
+  "schema_version": "2.0",
+  "generated_at": "2026-03-10",
+  "working_set_limit": 12,
+  "paths": {
+    "memory_path": "memory.md",
+    "archive_path": "memory.archive.md"
+  },
+  "items": [
+    {
+      "id": "CON-001",
+      "type": "constraint",
+      "status": "working",
+      "summary": "Use Forge lifecycle memory artifacts at repo root as the durable context source.",
+      "tags": ["forge", "memory", "workflow"],
+      "applies_to": ["all-phases"],
+      "how_to_comply": [
+        "Maintain Memory v2 files at project root.",
+        "Pass startup context through memory instead of ad hoc chat state."
+      ],
+      "evidence_refs": ["AGENTS.md", "forge-init"],
+      "canonical_location": "memory.md#con-001",
+      "archived_location": "memory.archive.md#con-001",
+      "needs_review": false,
+      "last_updated": "2026-03-10",
+      "last_verified": "2026-03-10",
+      "source_section": "Working Set > Constraints"
+    },
+    {
+      "id": "CON-002",
+      "type": "constraint",
+      "status": "working",
+      "summary": "Treat stack, commands, and source layout as unknown until repo evidence or user input exists.",
+      "tags": ["repo-surface", "startup-context", "constraints"],
+      "applies_to": ["planning", "implementation"],
+      "how_to_comply": [
+        "Avoid inventing package managers or commands.",
+        "Update memory only when manifests or user direction provide evidence."
+      ],
+      "evidence_refs": ["Repo inspection 2026-03-10"],
+      "canonical_location": "memory.md#con-002",
+      "archived_location": "memory.archive.md#con-002",
+      "needs_review": false,
+      "last_updated": "2026-03-10",
+      "last_verified": "2026-03-10",
+      "source_section": "Working Set > Constraints"
+    },
+    {
+      "id": "DEC-001",
+      "type": "decision",
+      "status": "working",
+      "summary": "Initialize Memory v2 in new-project mode because the repository has no prior project artifacts.",
+      "tags": ["bootstrap", "memory", "new-project"],
+      "applies_to": ["forge-init"],
+      "how_to_comply": [
+        "Start with minimal durable context.",
+        "Refine as project facts emerge."
+      ],
+      "evidence_refs": ["Repo inspection 2026-03-10"],
+      "canonical_location": "memory.md#dec-001",
+      "archived_location": "memory.archive.md#dec-001",
+      "needs_review": false,
+      "last_updated": "2026-03-10",
+      "last_verified": "2026-03-10",
+      "source_section": "Working Set > Decisions"
+    },
+    {
+      "id": "DEC-002",
+      "type": "decision",
+      "status": "working",
+      "summary": "The repository is for an agent skill that teaches object-oriented planning best practices.",
+      "tags": ["purpose", "skill", "oop", "planning"],
+      "applies_to": ["planning", "implementation", "review"],
+      "how_to_comply": [
+        "Bias future artifacts toward reusable OOP planning guidance.",
+        "Avoid drifting into unrelated implementation domains."
+      ],
+      "evidence_refs": ["User input 2026-03-10"],
+      "canonical_location": "memory.md#dec-002",
+      "archived_location": "memory.archive.md#dec-002",
+      "needs_review": false,
+      "last_updated": "2026-03-10",
+      "last_verified": "2026-03-10",
+      "source_section": "Working Set > Decisions"
+    },
+    {
+      "id": "PIT-001",
+      "type": "pitfall",
+      "status": "working",
+      "summary": "Speculative technical defaults are the main risk in the current empty-repo state.",
+      "tags": ["pitfall", "startup-context", "assumptions"],
+      "applies_to": ["planning", "implementation"],
+      "how_to_comply": [
+        "Keep unknown facts explicitly unknown.",
+        "Validate stack assumptions before execution."
+      ],
+      "evidence_refs": ["Repo inspection 2026-03-10"],
+      "canonical_location": "memory.md#pit-001",
+      "archived_location": "memory.archive.md#pit-001",
+      "needs_review": false,
+      "last_updated": "2026-03-10",
+      "last_verified": "2026-03-10",
+      "source_section": "Working Set > Pitfalls"
+    },
+    {
+      "id": "LRN-001",
+      "type": "learning",
+      "status": "working",
+      "summary": "At bootstrap, workflow constraints and known absences are more durable than guessed implementation details.",
+      "tags": ["learning", "bootstrap", "workflow"],
+      "applies_to": ["forge-init", "planning"],
+      "how_to_comply": [
+        "Capture process defaults first.",
+        "Promote implementation details only after evidence exists."
+      ],
+      "evidence_refs": ["forge-init"],
+      "canonical_location": "memory.md#lrn-001",
+      "archived_location": "memory.archive.md#lrn-001",
+      "needs_review": false,
+      "last_updated": "2026-03-10",
+      "last_verified": null,
+      "source_section": "Working Set > Learnings"
+    },
+    {
+      "id": "LRN-002",
+      "type": "learning",
+      "status": "working",
+      "summary": "Purpose can be durable before the skill's implementation format is known.",
+      "tags": ["learning", "bootstrap", "purpose"],
+      "applies_to": ["forge-init", "planning"],
+      "how_to_comply": [
+        "Anchor subsequent work to the confirmed domain purpose.",
+        "Keep tooling and packaging decisions provisional until evidenced."
+      ],
+      "evidence_refs": ["User input 2026-03-10"],
+      "canonical_location": "memory.md#lrn-002",
+      "archived_location": "memory.archive.md#lrn-002",
+      "needs_review": false,
+      "last_updated": "2026-03-10",
+      "last_verified": null,
+      "source_section": "Working Set > Learnings"
+    },
+    {
+      "id": "OPS-001",
+      "type": "operational-default",
+      "status": "working",
+      "summary": "Memory v2 files at repo root are the canonical durable context store.",
+      "tags": ["ops", "memory", "workflow"],
+      "applies_to": ["all-phases"],
+      "how_to_comply": [
+        "Read memory.md fully at task start.",
+        "Use the index for targeted retrieval."
+      ],
+      "evidence_refs": ["forge-init"],
+      "canonical_location": "memory.md#ops-001",
+      "archived_location": "memory.archive.md#ops-001",
+      "needs_review": false,
+      "last_updated": "2026-03-10",
+      "last_verified": null,
+      "source_section": "Working Set > Operational Defaults"
+    },
+    {
+      "id": "OPS-002",
+      "type": "operational-default",
+      "status": "working",
+      "summary": "No default build, lint, or test commands should be assumed until tooling exists.",
+      "tags": ["ops", "commands", "startup-context"],
+      "applies_to": ["planning", "verification"],
+      "how_to_comply": [
+        "Leave command defaults unset.",
+        "Derive them from manifests or explicit user input."
+      ],
+      "evidence_refs": ["Repo inspection 2026-03-10"],
+      "canonical_location": "memory.md#ops-002",
+      "archived_location": "memory.archive.md#ops-002",
+      "needs_review": false,
+      "last_updated": "2026-03-10",
+      "last_verified": null,
+      "source_section": "Working Set > Operational Defaults"
+    },
+    {
+      "id": "OPS-003",
+      "type": "operational-default",
+      "status": "candidate",
+      "summary": "Startup context: purpose is an OOP planning skill, but repo layout, commands, and plans root remain unset.",
+      "tags": ["startup-context", "repo-surface", "plans-root"],
+      "applies_to": ["forge-plan", "forge-quick"],
+      "how_to_comply": [
+        "Ask for or infer source/test roots only after files appear.",
+        "Record plans root preference once the user provides it."
+      ],
+      "evidence_refs": ["Repo inspection 2026-03-10"],
+      "canonical_location": "memory.archive.md#ops-003",
+      "archived_location": "memory.archive.md#ops-003",
+      "needs_review": true,
+      "last_updated": "2026-03-10",
+      "last_verified": null,
+      "source_section": "Startup Context Digest"
+    }
+  ]
+}
