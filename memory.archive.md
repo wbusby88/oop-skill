@@ -33,6 +33,11 @@
 
 - Full details: The main early-stage risk is inventing technical facts that are not supported by repository evidence or direct user input.
 
+<a id="pit-002"></a>
+### PIT-002
+
+- Full details: For this repository, letting SOLID dominate the skill structure would likely create checklist-driven, fake-OOP guidance instead of planning judgment. The planned mitigation is to lead with OOP planning fundamentals and treat SOLID as a validation lens.
+
 ## Learnings
 
 <a id="lrn-001"></a>
@@ -68,3 +73,8 @@
   - Primary source/test roots: unknown
   - Plans root preference: unknown
   - Workflow constraints from `AGENTS.md`: follow named skill routing, keep Memory v2 at root, do not skip required lifecycle artifacts.
+
+<a id="ops-004"></a>
+### OPS-004
+
+- Full details: Planning on 2026-03-10 established a default authoring structure of a compact `SKILL.md` plus one supporting reference/examples file, unless implementation proves that the support content must be split further.

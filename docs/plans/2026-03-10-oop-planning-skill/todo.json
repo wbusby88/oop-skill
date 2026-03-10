@@ -1,0 +1,664 @@
+{
+  "schema_version": "2.0",
+  "task_id": "oop-planning-skill",
+  "mode": "full",
+  "context": {
+    "memory_path": "memory.md",
+    "memory_index_path": "memory.index.json",
+    "memory_archive_path": "memory.archive.md",
+    "plan_path": "docs/plans/2026-03-10-oop-planning-skill/plan.md",
+    "research_path": "docs/plans/2026-03-10-oop-planning-skill/research.md",
+    "iteration_artifact_path": "docs/plans/2026-03-10-oop-planning-skill/iteration.md",
+    "implementation_review_path": "docs/plans/2026-03-10-oop-planning-skill/implementation-review.md",
+    "verification_artifact_path": "docs/plans/2026-03-10-oop-planning-skill/verification.md"
+  },
+  "global_constraints": [
+    "Do not edit files outside declared file_targets unless task is blocked and replanned",
+    "No scope expansion without explicit replan approval",
+    "Keep SKILL.md compact and retrieval-oriented for AI agents",
+    "Do not replace realistic domain examples with toy entity examples"
+  ],
+  "execution_policy": {
+    "batch_size": 1,
+    "parallelism": "none",
+    "on_missing_required_field": "hard_fail",
+    "on_scope_expansion": "stop_and_replan",
+    "commit_policy": "one_commit_per_logical_task",
+    "required_checks": [
+      "markdown-structure-review",
+      "anchor-reference-review",
+      "skill-verification-scenario-review"
+    ]
+  },
+  "items": [
+    {
+      "id": "T01",
+      "title": "Define skill artifact structure and section map",
+      "status": "completed",
+      "depends_on": [],
+      "objective": "Lock the concrete file layout, section ordering, and retrieval boundaries for the OOP planning skill.",
+      "scope_in": [
+        "Select final responsibilities for SKILL.md",
+        "Choose the support file structure",
+        "Define section ordering and cross-reference boundaries"
+      ],
+      "scope_out": [
+        "Writing the full skill prose",
+        "Executing skill verification scenarios"
+      ],
+      "file_targets": {
+        "create": [
+          "SKILL.md",
+          "oop-planning-examples.md"
+        ],
+        "modify": [],
+        "test": []
+      },
+      "plan_refs": [
+        "plan.md#task-t01",
+        "plan.md#acceptance-ac1",
+        "plan.md#acceptance-ac2"
+      ],
+      "research_refs": [
+        "research.md#decision-1",
+        "research.md#decision-6",
+        "research.md#decision-7"
+      ],
+      "memory_refs": [
+        "CON-002",
+        "DEC-002",
+        "PIT-001",
+        "OPS-004"
+      ],
+      "steps": [
+        {
+          "step_id": "T01-S1",
+          "kind": "design",
+          "instruction": "Inspect current repo contents and finalize the file layout for the skill and support material.",
+          "command_ref": "C1",
+          "expected_result_ref": "E1"
+        },
+        {
+          "step_id": "T01-S2",
+          "kind": "author",
+          "instruction": "Create the skeleton files with section placeholders and a clear boundary between SKILL.md and the support file.",
+          "command_ref": "C2",
+          "expected_result_ref": "E2"
+        },
+        {
+          "step_id": "T01-S3",
+          "kind": "review",
+          "instruction": "Review the section map against the retrieval goals and acceptance criteria.",
+          "command_ref": "C3",
+          "expected_result_ref": "E3"
+        },
+        {
+          "step_id": "T01-S4",
+          "kind": "commit",
+          "instruction": "Commit the logical task once the structure is locked.",
+          "command_ref": "C4",
+          "expected_result_ref": "E4"
+        }
+      ],
+      "commands": [
+        {
+          "id": "C1",
+          "run": "rg --files"
+        },
+        {
+          "id": "C2",
+          "run": "Create SKILL.md and oop-planning-examples.md with the planned section skeleton."
+        },
+        {
+          "id": "C3",
+          "run": "Review headings, anchors, and file split against docs/plans/2026-03-10-oop-planning-skill/plan.md."
+        },
+        {
+          "id": "C4",
+          "run": "git commit -m \"feat(skill): define oop planning skill structure\""
+        }
+      ],
+      "expected_results": [
+        {
+          "id": "E1",
+          "expect": "The current repo surface is confirmed before creating skill files."
+        },
+        {
+          "id": "E2",
+          "expect": "SKILL.md and oop-planning-examples.md exist with the planned section map."
+        },
+        {
+          "id": "E3",
+          "expect": "The split keeps SKILL.md compact and leaves heavy example content in the support file."
+        },
+        {
+          "id": "E4",
+          "expect": "One commit records only the structure-related files for this logical task."
+        }
+      ],
+      "verification": {
+        "checks": [
+          "Inspect SKILL.md and oop-planning-examples.md headings",
+          "Verify the structure satisfies AC1 and AC2"
+        ],
+        "acceptance_criteria_ids": [
+          "AC1",
+          "AC2"
+        ]
+      },
+      "commit": {
+        "message_template": "feat(skill): <logical-task-summary>",
+        "paths": [
+          "SKILL.md",
+          "oop-planning-examples.md"
+        ]
+      },
+      "handoff_notes": "Use the memory refs to keep the structure content-first and avoid assuming tooling details. The support file is currently planned as the place for heavier examples and anti-pattern material."
+    },
+    {
+      "id": "T02",
+      "title": "Author core workflow and heuristic guidance",
+      "status": "completed",
+      "depends_on": [
+        "T01"
+      ],
+      "objective": "Write the core planning-first workflow and the main OOP heuristic sections for the skill.",
+      "scope_in": [
+        "Trigger-oriented frontmatter and overview",
+        "Compact entry workflow",
+        "OOP planning fundamentals",
+        "SOLID as a validation lens",
+        "Red flags and review questions"
+      ],
+      "scope_out": [
+        "Extended example matrices",
+        "Verification execution"
+      ],
+      "file_targets": {
+        "create": [],
+        "modify": [
+          "SKILL.md"
+        ],
+        "test": []
+      },
+      "plan_refs": [
+        "plan.md#task-t02",
+        "plan.md#acceptance-ac1",
+        "plan.md#acceptance-ac3"
+      ],
+      "research_refs": [
+        "research.md#decision-3",
+        "research.md#decision-4",
+        "research.md#decision-6"
+      ],
+      "memory_refs": [
+        "DEC-002",
+        "LRN-002",
+        "OPS-004"
+      ],
+      "steps": [
+        {
+          "step_id": "T02-S1",
+          "kind": "author",
+          "instruction": "Write the frontmatter, overview, and compact planning workflow for AI-agent use.",
+          "command_ref": "C1",
+          "expected_result_ref": "E1"
+        },
+        {
+          "step_id": "T02-S2",
+          "kind": "author",
+          "instruction": "Add the OOP planning fundamentals and SOLID validation sections with explicit decision heuristics.",
+          "command_ref": "C2",
+          "expected_result_ref": "E2"
+        },
+        {
+          "step_id": "T02-S3",
+          "kind": "review",
+          "instruction": "Review the draft for planning-first balance and ensure it does not read like a beginner tutorial.",
+          "command_ref": "C3",
+          "expected_result_ref": "E3"
+        },
+        {
+          "step_id": "T02-S4",
+          "kind": "commit",
+          "instruction": "Commit the core guidance as one logical task.",
+          "command_ref": "C4",
+          "expected_result_ref": "E4"
+        }
+      ],
+      "commands": [
+        {
+          "id": "C1",
+          "run": "Author the compact workflow and overview in SKILL.md."
+        },
+        {
+          "id": "C2",
+          "run": "Author the heuristic sections in SKILL.md."
+        },
+        {
+          "id": "C3",
+          "run": "Review SKILL.md against the planning goals and acceptance criteria."
+        },
+        {
+          "id": "C4",
+          "run": "git commit -m \"feat(skill): author core oop planning heuristics\""
+        }
+      ],
+      "expected_results": [
+        {
+          "id": "E1",
+          "expect": "SKILL.md starts with a clear trigger-oriented entrypoint and workflow."
+        },
+        {
+          "id": "E2",
+          "expect": "The core sections teach both OOP usage and non-OOP alternatives through explicit heuristics."
+        },
+        {
+          "id": "E3",
+          "expect": "The draft remains advanced, planning-first, and retrieval-friendly."
+        },
+        {
+          "id": "E4",
+          "expect": "One commit captures only the core SKILL.md guidance changes."
+        }
+      ],
+      "verification": {
+        "checks": [
+          "Inspect SKILL.md for workflow and heuristic completeness",
+          "Verify balanced OOP/non-OOP guidance satisfies AC1 and AC3"
+        ],
+        "acceptance_criteria_ids": [
+          "AC1",
+          "AC3"
+        ]
+      },
+      "commit": {
+        "message_template": "feat(skill): <logical-task-summary>",
+        "paths": [
+          "SKILL.md"
+        ]
+      },
+      "handoff_notes": "Use the memory refs to keep the content tied to the repo purpose and the planned two-file structure. Avoid slipping into human-beginner teaching tone."
+    },
+    {
+      "id": "T03",
+      "title": "Author real-world examples and anti-pattern catalog",
+      "status": "completed",
+      "depends_on": [
+        "T01",
+        "T02"
+      ],
+      "objective": "Provide realistic recurring-domain examples, clear anti-examples, and a dedicated anti-pattern catalog for the skill.",
+      "scope_in": [
+        "Billing/subscriptions examples",
+        "Fulfillment/logistics examples",
+        "Identity/access management examples",
+        "Bad practice contrasts",
+        "Anti-pattern catalog",
+        "\"When not to use OOP\" comparisons"
+      ],
+      "scope_out": [
+        "Skill verification execution"
+      ],
+      "file_targets": {
+        "create": [],
+        "modify": [
+          "SKILL.md",
+          "oop-planning-examples.md"
+        ],
+        "test": []
+      },
+      "plan_refs": [
+        "plan.md#task-t03",
+        "plan.md#acceptance-ac3",
+        "plan.md#acceptance-ac4",
+        "plan.md#acceptance-ac5"
+      ],
+      "research_refs": [
+        "research.md#decision-2",
+        "research.md#decision-3",
+        "research.md#decision-6"
+      ],
+      "memory_refs": [
+        "DEC-002",
+        "PIT-002",
+        "OPS-004"
+      ],
+      "steps": [
+        {
+          "step_id": "T03-S1",
+          "kind": "author",
+          "instruction": "Write the recurring-domain good examples and bad contrasts in the support file.",
+          "command_ref": "C1",
+          "expected_result_ref": "E1"
+        },
+        {
+          "step_id": "T03-S2",
+          "kind": "author",
+          "instruction": "Add a dedicated anti-pattern catalog and cross-link it from SKILL.md.",
+          "command_ref": "C2",
+          "expected_result_ref": "E2"
+        },
+        {
+          "step_id": "T03-S3",
+          "kind": "review",
+          "instruction": "Review the examples to ensure they stay non-trivial, balanced, and directly retrievable.",
+          "command_ref": "C3",
+          "expected_result_ref": "E3"
+        },
+        {
+          "step_id": "T03-S4",
+          "kind": "commit",
+          "instruction": "Commit the examples and anti-pattern guidance as one logical task.",
+          "command_ref": "C4",
+          "expected_result_ref": "E4"
+        }
+      ],
+      "commands": [
+        {
+          "id": "C1",
+          "run": "Author realistic recurring-domain examples in oop-planning-examples.md."
+        },
+        {
+          "id": "C2",
+          "run": "Author and link the anti-pattern catalog from SKILL.md."
+        },
+        {
+          "id": "C3",
+          "run": "Review SKILL.md and oop-planning-examples.md against AC3-AC5."
+        },
+        {
+          "id": "C4",
+          "run": "git commit -m \"feat(skill): add oop examples and anti-pattern catalog\""
+        }
+      ],
+      "expected_results": [
+        {
+          "id": "E1",
+          "expect": "All three recurring domains appear in realistic examples with clear design pressure."
+        },
+        {
+          "id": "E2",
+          "expect": "The anti-pattern catalog is directly discoverable and clearly linked from the main skill."
+        },
+        {
+          "id": "E3",
+          "expect": "Examples avoid toy entities and explicitly show when not to use classes or OOP."
+        },
+        {
+          "id": "E4",
+          "expect": "One commit records the example and anti-pattern changes only."
+        }
+      ],
+      "verification": {
+        "checks": [
+          "Inspect examples for all three domains",
+          "Verify anti-pattern catalog and non-OOP guidance satisfy AC3-AC5"
+        ],
+        "acceptance_criteria_ids": [
+          "AC3",
+          "AC4",
+          "AC5"
+        ]
+      },
+      "commit": {
+        "message_template": "feat(skill): <logical-task-summary>",
+        "paths": [
+          "SKILL.md",
+          "oop-planning-examples.md"
+        ]
+      },
+      "handoff_notes": "The key risk is drifting into fake-OOP or toy examples. Use PIT-002 to keep SOLID subordinate to the broader planning guidance."
+    },
+    {
+      "id": "T04",
+      "title": "Prepare skill verification scenarios",
+      "status": "completed",
+      "depends_on": [
+        "T02",
+        "T03"
+      ],
+      "objective": "Document the pressure scenarios and expected behavior changes needed to verify the skill under writing-skills rules.",
+      "scope_in": [
+        "Baseline failure scenarios without the skill",
+        "Expected success scenarios with the skill",
+        "Rationalization targets and red flags",
+        "Verification notes organization"
+      ],
+      "scope_out": [
+        "Executing the verification loop",
+        "Declaring the skill complete"
+      ],
+      "file_targets": {
+        "create": [],
+        "modify": [
+          "SKILL.md",
+          "oop-planning-examples.md"
+        ],
+        "test": []
+      },
+      "plan_refs": [
+        "plan.md#task-t04",
+        "plan.md#acceptance-ac2",
+        "plan.md#acceptance-ac6"
+      ],
+      "research_refs": [
+        "research.md#entry-2",
+        "research.md#decision-4",
+        "research.md#decision-6"
+      ],
+      "memory_refs": [],
+      "steps": [
+        {
+          "step_id": "T04-S1",
+          "kind": "design",
+          "instruction": "Define baseline failure scenarios that likely cause agents to produce fake-OOP or class-heavy guidance without this skill.",
+          "command_ref": "C1",
+          "expected_result_ref": "E1"
+        },
+        {
+          "step_id": "T04-S2",
+          "kind": "author",
+          "instruction": "Write RED/GREEN verification scenarios in oop-planning-examples.md and link to them from SKILL.md.",
+          "command_ref": "C2",
+          "expected_result_ref": "E2"
+        },
+        {
+          "step_id": "T04-S3",
+          "kind": "review",
+          "instruction": "Review the verification notes against writing-skills requirements and ensure the skill references them clearly.",
+          "command_ref": "C3",
+          "expected_result_ref": "E3"
+        },
+        {
+          "step_id": "T04-S4",
+          "kind": "commit",
+          "instruction": "Commit the verification preparation as one logical task.",
+          "command_ref": "C4",
+          "expected_result_ref": "E4"
+        }
+      ],
+      "commands": [
+        {
+          "id": "C1",
+          "run": "Design pressure scenarios for skill verification."
+        },
+        {
+          "id": "C2",
+          "run": "Author RED/GREEN verification scenarios in oop-planning-examples.md and update SKILL.md references."
+        },
+        {
+          "id": "C3",
+          "run": "Review verification notes against writing-skills guidance."
+        },
+        {
+          "id": "C4",
+          "run": "git commit -m \"test(skill): prepare oop skill verification scenarios\""
+        }
+      ],
+      "expected_results": [
+        {
+          "id": "E1",
+          "expect": "Baseline scenarios target real fake-OOP failure modes, not generic documentation checks."
+        },
+        {
+          "id": "E2",
+          "expect": "oop-planning-examples.md documents RED/GREEN expectations and rationalization targets, and SKILL.md routes to them."
+        },
+        {
+          "id": "E3",
+          "expect": "The verification plan is clearly aligned with writing-skills and supports AC2 and AC6."
+        },
+        {
+          "id": "E4",
+          "expect": "One commit captures only the verification preparation files."
+        }
+      ],
+      "verification": {
+        "checks": [
+          "Inspect oop-planning-examples.md for RED/GREEN scenario coverage",
+          "Verify verification preparation satisfies AC2 and AC6"
+        ],
+        "acceptance_criteria_ids": [
+          "AC2",
+          "AC6"
+        ]
+      },
+      "commit": {
+        "message_template": "test(skill): <logical-task-summary>",
+        "paths": [
+          "SKILL.md",
+          "oop-planning-examples.md"
+        ]
+      },
+      "handoff_notes": "Memory: no applicable memory ids because this task's verification scenario details are implementation-specific rather than durable repo memory. The task must still enforce the writing-skills RED/GREEN/REFACTOR expectation inside oop-planning-examples.md."
+    },
+    {
+      "id": "T05",
+      "title": "Add retrieval anchors and navigation index",
+      "status": "completed",
+      "depends_on": [
+        "T03",
+        "T04"
+      ],
+      "objective": "Improve support-file retrieval precision by adding explicit anchors, a compact index, and section-level routing from the main skill file.",
+      "scope_in": [
+        "Add explicit HTML anchors to recurring domain sections",
+        "Add explicit HTML anchors to anti-pattern entries and verification sections",
+        "Add a compact navigation index to oop-planning-examples.md",
+        "Update SKILL.md routing text to reference named support-file sections"
+      ],
+      "scope_out": [
+        "New example content",
+        "Expanding RED/GREEN scenarios beyond navigation needs",
+        "Broader content restructuring"
+      ],
+      "file_targets": {
+        "create": [],
+        "modify": [
+          "SKILL.md",
+          "oop-planning-examples.md"
+        ],
+        "test": []
+      },
+      "plan_refs": [
+        "plan.md#task-t03",
+        "plan.md#task-t04",
+        "plan.md#acceptance-ac2",
+        "plan.md#acceptance-ac5",
+        "plan.md#acceptance-ac6"
+      ],
+      "research_refs": [
+        "research.md#decision-6"
+      ],
+      "memory_refs": [
+        "OPS-004"
+      ],
+      "steps": [
+        {
+          "step_id": "T05-S1",
+          "kind": "author",
+          "instruction": "Add explicit HTML anchors and a compact navigation index to oop-planning-examples.md.",
+          "command_ref": "C1",
+          "expected_result_ref": "E1"
+        },
+        {
+          "step_id": "T05-S2",
+          "kind": "author",
+          "instruction": "Update SKILL.md so routing text points to the named sections in oop-planning-examples.md.",
+          "command_ref": "C2",
+          "expected_result_ref": "E2"
+        },
+        {
+          "step_id": "T05-S3",
+          "kind": "review",
+          "instruction": "Review navigation and retrieval precision against the implementation-review findings.",
+          "command_ref": "C3",
+          "expected_result_ref": "E3"
+        },
+        {
+          "step_id": "T05-S4",
+          "kind": "commit",
+          "instruction": "Commit the retrieval-navigation improvements as one logical task.",
+          "command_ref": "C4",
+          "expected_result_ref": "E4"
+        }
+      ],
+      "commands": [
+        {
+          "id": "C1",
+          "run": "Add anchors and a compact section index to oop-planning-examples.md."
+        },
+        {
+          "id": "C2",
+          "run": "Update SKILL.md routing text to point to named support-file sections."
+        },
+        {
+          "id": "C3",
+          "run": "Review SKILL.md and oop-planning-examples.md for retrieval precision improvements."
+        },
+        {
+          "id": "C4",
+          "run": "git commit -m \"docs(skill): add section anchors and navigation index\""
+        }
+      ],
+      "expected_results": [
+        {
+          "id": "E1",
+          "expect": "oop-planning-examples.md exposes explicit jump targets for domains, anti-patterns, and verification scenarios."
+        },
+        {
+          "id": "E2",
+          "expect": "SKILL.md routes to named sections instead of only the support file as a whole."
+        },
+        {
+          "id": "E3",
+          "expect": "The retrieval/navigation gap identified in A03 and H01 is reduced."
+        },
+        {
+          "id": "E4",
+          "expect": "One commit records only the retrieval-navigation improvement changes."
+        }
+      ],
+      "verification": {
+        "checks": [
+          "Inspect oop-planning-examples.md for anchors and navigation index",
+          "Inspect SKILL.md for section-level routing"
+        ],
+        "acceptance_criteria_ids": [
+          "AC2",
+          "AC5",
+          "AC6"
+        ]
+      },
+      "commit": {
+        "message_template": "docs(skill): <logical-task-summary>",
+        "paths": [
+          "SKILL.md",
+          "oop-planning-examples.md"
+        ]
+      },
+      "handoff_notes": "Use OPS-004 to keep the main skill compact while making the support file easier to retrieve from. This task supersedes no completed work; it narrows a reviewed usability gap."
+    }
+  ]
+}

@@ -196,6 +196,44 @@
       "last_updated": "2026-03-10",
       "last_verified": null,
       "source_section": "Startup Context Digest"
+    },
+    {
+      "id": "OPS-004",
+      "type": "operational-default",
+      "status": "candidate",
+      "summary": "This repo's first implementation pass should use a compact SKILL.md plus one support file unless authoring proves that split insufficient.",
+      "tags": ["plans-root", "skill-structure", "startup-context"],
+      "applies_to": ["planning", "implementation"],
+      "how_to_comply": [
+        "Keep SKILL.md compact and retrieval-oriented.",
+        "Put heavier example and anti-pattern material into one support file by default."
+      ],
+      "evidence_refs": ["research.md#decision-7", "plan.md#task-t01"],
+      "canonical_location": "memory.archive.md#ops-004",
+      "archived_location": "memory.archive.md#ops-004",
+      "needs_review": true,
+      "last_updated": "2026-03-10",
+      "last_verified": null,
+      "source_section": "Planning Candidates"
+    },
+    {
+      "id": "PIT-002",
+      "type": "pitfall",
+      "status": "candidate",
+      "summary": "Centering the skill on SOLID checklists instead of planning heuristics risks reinforcing fake OOP.",
+      "tags": ["pitfall", "oop", "solid", "heuristics"],
+      "applies_to": ["planning", "implementation", "review"],
+      "how_to_comply": [
+        "Position SOLID as a validation lens after OOP planning fundamentals.",
+        "Require anti-pattern and non-OOP guidance alongside SOLID sections."
+      ],
+      "evidence_refs": ["research.md#decision-5", "research.md#decision-6"],
+      "canonical_location": "memory.archive.md#pit-002",
+      "archived_location": "memory.archive.md#pit-002",
+      "needs_review": true,
+      "last_updated": "2026-03-10",
+      "last_verified": null,
+      "source_section": "Planning Candidates"
     }
   ]
 }

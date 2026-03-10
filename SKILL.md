@@ -1,5 +1,5 @@
 ---
-name: planning-oop-and-solid
+name: object-oriented-programming
 description: Use when an AI agent is deciding whether object-oriented design is appropriate, planning object boundaries, reviewing SOLID-driven designs, or spotting fake OOP such as anemic models, interface cargo culting, weak encapsulation, and classes used for their own sake.
 ---
 
