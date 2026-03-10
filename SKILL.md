@@ -116,13 +116,18 @@ Review questions:
 
 ## Anti-Pattern Routing
 
-- For class-shaped data containers, see `Anemic Models`.
-- For abstraction without boundary value, see `Interface Cargo Culting`.
-- For inheritance misuse, see `Reuse Through Inheritance`.
-- For centralized orchestration, see `God Services and Managers`.
-- For situations where no object model should be introduced, see `When Not to Use OOP`.
+- For class-shaped data containers, see `Anemic Models` in `oop-planning-examples.md#anemic-models`.
+- For abstraction without boundary value, see `Interface Cargo Culting` in `oop-planning-examples.md#interface-cargo-culting`.
+- For inheritance misuse, see `Reuse Through Inheritance` in `oop-planning-examples.md#reuse-through-inheritance`.
+- For centralized orchestration, see `God Services and Managers` in `oop-planning-examples.md#god-services-and-managers`.
+- For situations where no object model should be introduced, see `When Not to Use OOP` in `oop-planning-examples.md#when-not-to-use-oop`.
 
-Detailed entries, real-world examples, and verification scenarios live in `oop-planning-examples.md`.
+Detailed entries, real-world examples, and verification scenarios live in `oop-planning-examples.md`, with direct sections for:
+- `#billing-subscriptions`
+- `#fulfillment-logistics`
+- `#identity-access-management`
+- `#anti-pattern-catalog`
+- `#verification-scenarios`
 
 Recurring domains in that file:
 - billing and subscriptions

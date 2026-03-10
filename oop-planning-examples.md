@@ -4,6 +4,16 @@
 
 This file holds the detailed recurring-domain examples, anti-pattern catalog, and verification scenarios referenced by `SKILL.md`.
 
+## Navigation Index
+
+- [Billing and subscriptions](#billing-subscriptions)
+- [Fulfillment and logistics](#fulfillment-logistics)
+- [Identity and access management](#identity-access-management)
+- [Anti-pattern catalog](#anti-pattern-catalog)
+- [When not to use OOP](#when-not-to-use-oop)
+- [Verification scenarios](#verification-scenarios)
+
+<a id="billing-subscriptions"></a>
 ## Billing and Subscriptions
 
 ### Good Fit: Subscription Lifecycle With Policy Ownership
@@ -37,6 +47,7 @@ Why that is fake OOP:
 
 If the task is only "generate next invoice previews for 20,000 subscriptions," a pipeline of query -> transform -> summarize is usually clearer than introducing preview objects with trivial methods.
 
+<a id="fulfillment-logistics"></a>
 ## Fulfillment and Logistics
 
 ### Good Fit: Shipment Aggregate With Reservation Rules
@@ -70,6 +81,7 @@ Why that is fake OOP:
 
 If the work is "optimize pick-path ordering for a warehouse wave," a data-processing or optimization pipeline may be better than an object graph. The result is usually a computed plan, not a long-lived behavioral aggregate.
 
+<a id="identity-access-management"></a>
 ## Identity and Access Management
 
 ### Good Fit: Access Grant Evaluation With Policy Objects
@@ -103,8 +115,10 @@ Why that is fake OOP:
 
 If the task is "expand a permission matrix export" or "summarize access audit records," a query + transformation flow is usually preferable to building export-specific classes.
 
+<a id="anti-pattern-catalog"></a>
 ## Anti-Pattern Catalog
 
+<a id="anemic-models"></a>
 ### Anemic Models
 
 Signals:
@@ -117,6 +131,7 @@ Prevention:
 - expose intent methods instead of raw mutation
 - make invalid state transitions impossible or explicit
 
+<a id="interface-cargo-culting"></a>
 ### Interface Cargo Culting
 
 Signals:
@@ -128,6 +143,7 @@ Prevention:
 - define interfaces for client-facing roles, external boundaries, or meaningful alternate implementations
 - delete local interfaces that only mirror concrete classes
 
+<a id="reuse-through-inheritance"></a>
 ### Reuse Through Inheritance
 
 Signals:
@@ -139,6 +155,7 @@ Prevention:
 - replace reuse hierarchies with composition, policies, or explicit strategy objects
 - keep inheritance only when semantic substitutability is real
 
+<a id="god-services-and-managers"></a>
 ### God Services and Managers
 
 Signals:
@@ -151,6 +168,7 @@ Prevention:
 - move invariant enforcement closer to the state it protects
 - use orchestration only to sequence already-owned behaviors
 
+<a id="class-wrappers-over-data"></a>
 ### Class Wrappers Over Data
 
 Signals:
@@ -162,6 +180,7 @@ Prevention:
 - keep plain data plain when behavior does not need ownership
 - upgrade to objects only when invariants or policy control justify it
 
+<a id="when-not-to-use-oop"></a>
 ## When Not to Use OOP
 
 Prefer simpler designs when:
@@ -173,6 +192,7 @@ Prefer simpler designs when:
 Comparison rule:
 - if the non-OOP design is clearer and does not sacrifice invariant protection, keep it.
 
+<a id="verification-scenarios"></a>
 ## Verification Scenarios
 
 ### RED: Expected Failure Without This Skill
