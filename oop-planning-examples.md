@@ -9,6 +9,7 @@ This file holds the detailed recurring-domain examples, anti-pattern catalog, an
 - [Billing and subscriptions](#billing-subscriptions)
 - [Fulfillment and logistics](#fulfillment-logistics)
 - [Identity and access management](#identity-access-management)
+- [Language-specific defaults](#language-specific-defaults)
 - [Anti-pattern catalog](#anti-pattern-catalog)
 - [When not to use OOP](#when-not-to-use-oop)
 - [Verification scenarios](#verification-scenarios)
@@ -25,6 +26,7 @@ Problem:
 
 Good design shape:
 - `Subscription` owns state transitions such as activate, suspend, recover, cancel, and expire.
+- `new Subscription(...)` or a named factory creates a valid subscription with required plan, term, and start-state data.
 - `BillingPolicy` or `RenewalPolicy` captures pricing and retry rules that vary by product or market.
 - `InvoiceAttempt` or `PaymentRecoveryPolicy` handles retry windows without leaking those rules into controllers.
 
@@ -43,6 +45,53 @@ Why that is fake OOP:
 - Status integrity depends on external orchestration order.
 - Adding a new recovery rule means editing multiple managers instead of extending policy seams.
 
+JavaScript/TypeScript pressure example:
+
+Bad helper-first shape:
+
+```ts
+type SubscriptionRecord = {
+  status: "trial" | "active" | "grace" | "suspended" | "canceled";
+  renewalAttempts: number;
+};
+
+export function cancelSubscription(record: SubscriptionRecord, today: Date) {
+  if (record.status === "canceled") throw new Error("already canceled");
+  record.status = "canceled";
+}
+
+export function retryPayment(record: SubscriptionRecord) {
+  record.renewalAttempts += 1;
+}
+```
+
+Better object-owned shape:
+
+```ts
+class Subscription {
+  #status: "trial" | "active" | "grace" | "suspended" | "canceled";
+  #renewalAttempts = 0;
+
+  constructor(initialStatus: "trial" | "active") {
+    this.#status = initialStatus;
+  }
+
+  cancel(today: Date) {
+    if (this.#status === "canceled") throw new Error("already canceled");
+    this.#status = "canceled";
+  }
+
+  recordPaymentFailure() {
+    this.#renewalAttempts += 1;
+  }
+}
+```
+
+Why the second shape is better:
+- construction defines a valid starting state
+- mutation happens through explicit methods
+- callers no longer need to know which helper must run in which order
+
 ### When Not to Use OOP Here
 
 If the task is only "generate next invoice previews for 20,000 subscriptions," a pipeline of query -> transform -> summarize is usually clearer than introducing preview objects with trivial methods.
@@ -59,6 +108,7 @@ Problem:
 
 Good design shape:
 - `Shipment` owns packing and shipping transitions and rejects impossible combinations.
+- `new Shipment(...)` starts with a coherent reservation/fulfillment state rather than a partially filled mutable record.
 - `ReservationPolicy` decides whether inventory can be split, backordered, or rerouted.
 - `CarrierSelectionPolicy` evaluates constraints without turning carrier choices into inheritance trees.
 
@@ -93,6 +143,7 @@ Problem:
 
 Good design shape:
 - `AccessGrant` or `Assignment` owns lifecycle transitions such as approve, revoke, expire, and renew.
+- `new AccessGrant(...)` or an approval factory captures who requested access, what scope was granted, and when it starts in a valid state.
 - `AuthorizationPolicy` evaluates whether a requested action is permitted under current grants and constraints.
 - `BreakGlassPolicy` is composed in as an exceptional capability rather than implemented as a subclass hack.
 
@@ -114,6 +165,28 @@ Why that is fake OOP:
 ### When Not to Use OOP Here
 
 If the task is "expand a permission matrix export" or "summarize access audit records," a query + transformation flow is usually preferable to building export-specific classes.
+
+<a id="language-specific-defaults"></a>
+## Language-Specific Defaults
+
+### JavaScript and TypeScript
+
+- When a concept has owned mutable state plus behavior, prefer a `class` with explicit construction over exported records plus helper functions.
+- Prefer `#private` fields when real runtime privacy matters; TypeScript `private` alone is not the same boundary.
+- Keep helper modules for pure calculations, parsing, formatting, mapping, and other stateless support work.
+- If the prompt explicitly asks for an OOP system, do not satisfy it with a plain object and a bag of exported functions unless the domain is obviously trivial.
+
+### Python
+
+- Use a regular class for behavior-rich entities or aggregates with lifecycle transitions.
+- Use `@dataclass` for record-like structures or value objects, especially when the object is mostly named data plus lightweight validation.
+- Favor frozen value objects when immutability clarifies the model and identity is unnecessary.
+
+### Java and C#
+
+- Prefer constructor-created objects with private state and explicit methods or validated properties.
+- Do not expose domain state as public mutable fields.
+- Let methods and accessors enforce validation rather than relying on callers to remember helper sequences.
 
 <a id="anti-pattern-catalog"></a>
 ## Anti-Pattern Catalog
@@ -168,6 +241,20 @@ Prevention:
 - move invariant enforcement closer to the state it protects
 - use orchestration only to sequence already-owned behaviors
 
+<a id="helper-modules-owning-domain-state"></a>
+### Helper Modules Owning Domain State
+
+Signals:
+- exported helper functions mutate the same record across multiple steps
+- call order is important but not protected by an object boundary
+- the prompt asks for OOP, but the answer returns data objects plus procedural helpers
+- refactors require editing many helpers because no object owns the lifecycle
+
+Prevention:
+- turn the record into an object with explicit construction and intent methods
+- move transition rules into the object or a composed policy object
+- keep pure helpers pure and subordinate to the main object model
+
 <a id="class-wrappers-over-data"></a>
 ### Class Wrappers Over Data
 
@@ -218,6 +305,14 @@ Scenario 3: Authorization planning under architecture pressure
   - weakens contracts through subtype-specific bypass logic
   - fails to identify which transitions require strong encapsulation and audit ownership
 
+Scenario 4: JavaScript OOP request under helper pressure
+- Prompt shape: "Design this in JavaScript as an OOP system. A subscription should manage retries, suspension, cancellation, and recovery."
+- Expected failure without this skill:
+  - returns a record type plus `subscriptionHelpers.ts`
+  - exposes mutable status data and relies on helper call order
+  - never shows how `new Subscription(...)` establishes a valid object
+  - treats procedural helpers as the true domain model
+
 ### GREEN: Expected Behavior With This Skill
 
 For the same scenarios, the agent should:
@@ -225,13 +320,16 @@ For the same scenarios, the agent should:
 - identify the invariant-owning lifecycle boundary before naming classes
 - use policies and composition where variation is real
 - reject interfaces or inheritance that do not protect a boundary
+- when OOP is justified, prefer explicit object construction and owned methods over helper-first mutation
 - include at least one explicit "when not to use OOP here" comparison
 - name the likely anti-pattern if the design starts drifting toward ceremony
 
 ### Review Assertions
 
 - The answer explains why an object exists, not just what noun it represents.
+- The answer explains how the important object is constructed in a valid state.
 - The answer identifies where invalid state or policy violation is prevented.
+- The answer keeps core mutable state behind the object instead of exporting writable records.
 - SOLID is used to critique the design, not to force additional abstractions.
 - Anti-patterns such as anemic models, god services, or interface cargo culting are called out explicitly when relevant.
 - The answer retains simple non-OOP structures where they are better.
@@ -242,3 +340,4 @@ For the same scenarios, the agent should:
 - "This class could grow later" used to justify a weak object boundary now.
 - "Inheritance keeps things DRY" used without proving substitutability.
 - "Everything should be an object in a proper architecture" used as a premise.
+- "These helpers are basically methods anyway" used to excuse exported procedural control over domain state.

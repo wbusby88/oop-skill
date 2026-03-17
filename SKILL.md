@@ -7,7 +7,7 @@ description: Use when an AI agent is deciding whether object-oriented design is 
 
 ## Overview
 
-Use this skill to make planning-time OOP decisions before implementation starts, then review drafted designs for fake OOP and weak object boundaries. The goal is not "use classes well"; the goal is "use object-oriented design only where it creates better behavior boundaries, policy control, and change isolation than simpler alternatives."
+Use this skill to make planning-time OOP decisions before implementation starts, then review drafted designs for fake OOP and weak object boundaries. The goal is not "use classes well"; the goal is "use object-oriented design only where it creates better behavior boundaries, policy control, and change isolation than simpler alternatives." Once OOP is justified, default to real objects that own state, invariants, and behavior rather than helper-heavy procedural flows.
 
 ## When to Use
 
@@ -16,17 +16,19 @@ Use this skill to make planning-time OOP decisions before implementation starts,
 - A review needs to distinguish real encapsulation from class-shaped data containers.
 - SOLID is being cited, but it is not clear whether it improves the design or just adds ceremony.
 - The problem includes rich domain rules, lifecycle transitions, or policy enforcement and may justify object boundaries.
+- The user explicitly asks for an OOP design, object model, class design, aggregate, entity, or value object structure.
 
 Do not use this skill for beginner syntax teaching or for forcing an object model onto straightforward data transformation problems.
 
 ## Entry Workflow
 
-1. Decide whether this problem needs objects at all.
+1. If the user explicitly wants OOP or the domain has lifecycle/invariant pressure, identify the candidate objects first.
 2. Identify where behavior, invariants, and policy ownership actually live.
-3. Model only the boundaries that protect those rules.
-4. Use SOLID to validate the design, not to invent abstractions.
-5. Check the anti-pattern catalog before approving the plan.
-6. Compare the object-oriented design against a simpler non-OOP alternative.
+3. Choose the smallest set of value objects, entities, aggregates, and policies that can protect those rules.
+4. Define how each important object is created, what state it hides, and which intent methods own transitions.
+5. Use SOLID to validate the design, not to invent abstractions.
+6. Check the anti-pattern catalog before approving the plan.
+7. Compare the object-oriented design against a simpler non-OOP alternative.
 
 ## Quick Triage
 
@@ -34,6 +36,11 @@ Do not use this skill for beginner syntax teaching or for forcing an object mode
   - domain rules must be enforced across lifecycle transitions
   - invariants must survive multiple operations over time
   - policies need explicit ownership and substitution boundaries
+  - the user explicitly asks for an OOP/object design and the domain is richer than a pure data pipeline
+- When OOP is chosen:
+  - prefer a domain object with explicit construction over helper modules that mutate shared records
+  - keep important state behind methods or policies instead of exporting writable fields
+  - let callers request outcomes from the object instead of orchestrating each mutation step themselves
 - Avoid OOP when:
   - the work is mostly stateless transformation or aggregation
   - behavior lives naturally in a pipeline, rule table, or pure function layer
@@ -55,11 +62,38 @@ Do not use this skill for beginner syntax teaching or for forcing an object mode
 - Prefer simpler data-oriented or functional structures when the design mostly transforms records without owned lifecycle rules.
 - Reject classes that only rename nouns from the requirements without gaining control over behavior.
 - Reject interfaces created only to satisfy a pattern rather than a real substitution or boundary need.
+- If a mutable record would otherwise be passed through multiple helper functions, strongly consider turning that boundary into an object.
 
 Planning questions:
 - What can become invalid if callers bypass this boundary?
 - Which rules need one owner instead of coordination across many helpers?
 - If this object disappeared, would the remaining design become clearer?
+
+## Object Ownership Defaults
+
+- When the prompt asks for an OOP system, assume the primary domain concepts should become behavior-owning objects unless the problem is obviously a pure transformation task.
+- Start with value objects for immutable concepts with validation, then introduce entities where identity and lifecycle matter over time.
+- Use an aggregate or root object when multiple changes must preserve one transactionally meaningful invariant.
+- Put domain rules in the object that can actually prevent invalid state, not in a helper file that merely remembers to run first.
+- Keep helper functions subordinate to objects: helpers may calculate, parse, format, or map data, but they should not own the core lifecycle of a domain concept.
+
+Planning questions:
+- Which concept should be instantiated as an object because callers must not edit its internals directly?
+- Which concept is only data and should remain a record, DTO, or value object instead of growing ad hoc methods?
+- Which object is the natural owner of each rule that currently appears in a helper or manager?
+
+## Construction and Encapsulation Defaults
+
+- Prefer explicit construction such as `new Subscription(args)` or a named factory when an object must start life valid.
+- Constructors or factories should establish required invariants up front rather than relying on follow-up helper calls.
+- Expose intent methods such as `cancel()`, `suspend()`, `approve()`, or `retryPayment()` instead of writable status fields.
+- Hide mutable internals behind private state, validated accessors, or value objects when the language supports it.
+- If persistence requires rehydration, keep it explicit with a separate factory or repository path rather than weakening normal construction rules.
+
+Planning questions:
+- How is the object guaranteed to be valid immediately after construction?
+- Which fields should never be directly mutable by callers?
+- Which transitions deserve explicit methods instead of public data mutation?
 
 ## Behavior and Encapsulation Heuristics
 
@@ -78,12 +112,21 @@ Weak signals:
 - services outside the object assemble the real business policy
 - every rule needs multiple collaborators because no object owns it
 
+## Helpers, Services, and Object Boundaries
+
+- Keep pure helper functions for stateless calculations, formatting, parsing, and record-to-record transformations.
+- If a helper function mutates shared domain state, depends on call order, or knows the lifecycle better than the object, it probably wants to become a method or policy object.
+- Use a domain service only when the behavior does not naturally belong to one object, value object, or policy seam.
+- Use application services to coordinate already-owned behavior, not to become the real home of business rules.
+- Reject `XManager` or `XHelpers` modules that are effectively the true domain model while the "objects" stay passive.
+
 ## Composition and Boundary Heuristics
 
 - Prefer composition when behaviors vary independently or are policy-driven.
 - Prefer inheritance only when subtype semantics preserve the same contract and invariants.
 - Use interfaces at boundaries where clients truly depend on a role, capability, or external integration seam.
 - Keep external I/O and domain behavior separate so policy objects are testable without infrastructure noise.
+- Prefer policy objects, strategies, or composed collaborators over inheritance when variation is real but lifecycle ownership stays the same.
 
 Planning questions:
 - Is this variability semantic or just code reuse?
@@ -100,6 +143,19 @@ Planning questions:
 
 Use SOLID after the design exists in rough form. If SOLID is the reason a class or interface exists, the design is probably backwards.
 
+## Language-Specific Defaults
+
+- JavaScript/TypeScript:
+  - For rich domain behavior, prefer `class` plus explicit construction and methods over exporting a mutable object and a pile of helper functions.
+  - Use `#private` when you need real runtime privacy in JavaScript or TypeScript, not just naming convention.
+  - Keep top-level functions or plain objects for truly stateless utilities, not for owning domain lifecycle.
+- Python:
+  - Use a regular class when the object owns lifecycle transitions or invariant-enforcing behavior.
+  - Use `@dataclass` or a frozen value object style for record-like concepts with lightweight validation and little or no owned lifecycle.
+- Java/C#:
+  - Default to private state, constructor initialization, and validated methods or properties.
+  - Avoid public mutable fields for domain state; expose intent and validation through methods/accessors instead.
+
 ## Review Red Flags
 
 - Classes hold data while workflows elsewhere enforce the real rules.
@@ -107,6 +163,8 @@ Use SOLID after the design exists in rough form. If SOLID is the reason a class 
 - Inheritance is used to share code rather than preserve semantic substitutability.
 - Interface counts are growing faster than meaningful architectural boundaries.
 - The design cannot explain why an object is better than a pure function plus data.
+- A helper module or service knows the valid transition order better than the object that supposedly owns the domain.
+- The answer claims to be OOP but never explains construction, hidden state, or the methods that protect invariants.
 
 Review questions:
 - Which object owns the most important invariant?
@@ -120,6 +178,7 @@ Review questions:
 - For abstraction without boundary value, see `Interface Cargo Culting` in `oop-planning-examples.md#interface-cargo-culting`.
 - For inheritance misuse, see `Reuse Through Inheritance` in `oop-planning-examples.md#reuse-through-inheritance`.
 - For centralized orchestration, see `God Services and Managers` in `oop-planning-examples.md#god-services-and-managers`.
+- For helper-first procedural designs disguised as OOP, see `Helper Modules Owning Domain State` in `oop-planning-examples.md#helper-modules-owning-domain-state`.
 - For situations where no object model should be introduced, see `When Not to Use OOP` in `oop-planning-examples.md#when-not-to-use-oop`.
 
 Detailed entries, real-world examples, and verification scenarios live in `oop-planning-examples.md`, with direct sections for:
@@ -145,3 +204,5 @@ Verification preparation:
 - Using repositories, managers, and services to carry all domain behavior while entities remain passive.
 - Treating interface-per-class as architecture.
 - Using inheritance to share implementation where composition or functions would be clearer.
+- Exporting mutable records and relying on helper functions to preserve invariants after the fact.
+- Saying "object-oriented" while omitting construction rules, hidden state, and intent-revealing methods.
