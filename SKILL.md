@@ -39,6 +39,7 @@ Do not use this skill for beginner syntax teaching or for forcing an object mode
   - the user explicitly asks for an OOP/object design and the domain is richer than a pure data pipeline
 - When OOP is chosen:
   - prefer a domain object with explicit construction over helper modules that mutate shared records
+  - default to `new Thing(...)` when there is one normal creation path; use named/static factories only when they express a genuinely different creation meaning or handle explicit rehydration/parsing boundaries
   - keep important state behind methods or policies instead of exporting writable fields
   - let callers request outcomes from the object instead of orchestrating each mutation step themselves
 - Avoid OOP when:
@@ -85,13 +86,18 @@ Planning questions:
 ## Construction and Encapsulation Defaults
 
 - Prefer explicit construction such as `new Subscription(args)` or a named factory when an object must start life valid.
+- Default to a constructor when the object has one normal way to become valid; do not replace ordinary construction with `fromX`, `create`, or `build` methods that merely forward arguments.
+- Use a named/static factory when it communicates a distinct creation semantics such as rehydration from persistence, parsing external input, or selecting among meaningfully different valid states.
+- Keep nullable or optional input handling outside the core object when possible; `fromOptional`, `maybeCreate`, or `fromNullable` patterns often hide upstream control flow rather than modeling a domain concept.
 - Constructors or factories should establish required invariants up front rather than relying on follow-up helper calls.
 - Expose intent methods such as `cancel()`, `suspend()`, `approve()`, or `retryPayment()` instead of writable status fields.
 - Hide mutable internals behind private state, validated accessors, or value objects when the language supports it.
 - If persistence requires rehydration, keep it explicit with a separate factory or repository path rather than weakening normal construction rules.
+- If a top-level helper needs several fields the object already owns, consider making it a private method or composed policy on that object instead of passing its own state back out.
 
 Planning questions:
 - How is the object guaranteed to be valid immediately after construction?
+- Is this named factory expressing real domain meaning, or is it avoiding a constructor without gaining clarity?
 - Which fields should never be directly mutable by callers?
 - Which transitions deserve explicit methods instead of public data mutation?
 
@@ -116,6 +122,7 @@ Weak signals:
 
 - Keep pure helper functions for stateless calculations, formatting, parsing, and record-to-record transformations.
 - If a helper function mutates shared domain state, depends on call order, or knows the lifecycle better than the object, it probably wants to become a method or policy object.
+- If a helper function consumes the same config or internal fields that an object already encapsulates, it is often an encapsulation leak rather than a useful helper.
 - Use a domain service only when the behavior does not naturally belong to one object, value object, or policy seam.
 - Use application services to coordinate already-owned behavior, not to become the real home of business rules.
 - Reject `XManager` or `XHelpers` modules that are effectively the true domain model while the "objects" stay passive.
@@ -164,6 +171,8 @@ Use SOLID after the design exists in rough form. If SOLID is the reason a class 
 - Interface counts are growing faster than meaningful architectural boundaries.
 - The design cannot explain why an object is better than a pure function plus data.
 - A helper module or service knows the valid transition order better than the object that supposedly owns the domain.
+- A static `fromX` or `create` method is used as a constructor alias even though there is only one ordinary creation path.
+- Top-level helper functions take the object's own config or state as parameters because the object never internalized that behavior.
 - The answer claims to be OOP but never explains construction, hidden state, or the methods that protect invariants.
 
 Review questions:
@@ -205,4 +214,6 @@ Verification preparation:
 - Treating interface-per-class as architecture.
 - Using inheritance to share implementation where composition or functions would be clearer.
 - Exporting mutable records and relying on helper functions to preserve invariants after the fact.
+- Replacing straightforward constructors with `fromX` factories that add no semantic distinction and usually signal misplaced control flow.
+- Leaving behavior in file-level helpers even though the helper only needs state the object already owns.
 - Saying "object-oriented" while omitting construction rules, hidden state, and intent-revealing methods.

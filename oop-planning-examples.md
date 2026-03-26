@@ -92,6 +92,88 @@ Why the second shape is better:
 - mutation happens through explicit methods
 - callers no longer need to know which helper must run in which order
 
+### Boundary Check: Constructor First, Helper Second
+
+Problem:
+- A text element owns layout rules, font normalization, and rendering behavior.
+- The design introduces a class, but still keeps width and sizing behavior in top-level helpers.
+- Creation is routed through `fromOptional(...)` even though the main object has one ordinary valid creation path.
+
+Bad helper-and-factory drift:
+
+```ts
+type LayoutConfig = {
+  minFontSize: number;
+  maxFontSize: number;
+  maxWidth: number;
+};
+
+function resolveTextFontSize(text: string, font: Font, layout: LayoutConfig) {
+  const widthAtMax = font.widthOfTextAtSize(text.trim(), layout.maxFontSize);
+  return Math.min(layout.maxFontSize, (layout.maxWidth * layout.maxFontSize) / widthAtMax);
+}
+
+class CertificateTextElement {
+  static fromOptional(text: string | undefined, layout: LayoutConfig | undefined) {
+    if (!text || !layout) return null;
+    return new CertificateTextElement(text, layout);
+  }
+
+  constructor(
+    private readonly text: string,
+    private readonly layout: LayoutConfig,
+  ) {}
+
+  draw(page: Page, font: Font) {
+    const size = resolveTextFontSize(this.text, font, this.layout);
+    page.drawText(this.text, {size});
+  }
+}
+```
+
+Why this misses:
+- `fromOptional(...)` is just upstream null handling disguised as object creation.
+- The sizing rule still lives outside the object even though it only needs the object's own state.
+- The class exists, but important behavior is still organized procedurally.
+
+Better object-owned shape:
+
+```ts
+class CertificateTextElement {
+  readonly #text: string;
+  readonly #layout: LayoutConfig;
+
+  constructor(text: string, layout: LayoutConfig) {
+    const normalized = text.trim();
+    if (!normalized) throw new Error("text is required");
+    this.#text = normalized;
+    this.#layout = layout;
+  }
+
+  draw(page: Page, font: Font) {
+    page.drawText(this.#text, {
+      size: this.#resolveFontSize(font),
+    });
+  }
+
+  #resolveFontSize(font: Font) {
+    const widthAtMax = font.widthOfTextAtSize(this.#text, this.#layout.maxFontSize);
+    return Math.min(
+      this.#layout.maxFontSize,
+      (this.#layout.maxWidth * this.#layout.maxFontSize) / widthAtMax,
+    );
+  }
+}
+```
+
+What changed:
+- normal construction establishes a valid element immediately
+- optional-input handling stays at the call site or in a mapper, not in the domain object
+- behavior that depends on encapsulated state moved behind the object boundary
+
+Legitimate exception:
+- a factory such as `CertificateTextElement.rehydrate(snapshot)` can make sense if it reconstructs the object from persistence or an external schema and performs translation that ordinary construction should not own
+
 ### When Not to Use OOP Here
 
 If the task is only "generate next invoice previews for 20,000 subscriptions," a pipeline of query -> transform -> summarize is usually clearer than introducing preview objects with trivial methods.
@@ -255,6 +337,10 @@ Prevention:
 - move transition rules into the object or a composed policy object
 - keep pure helpers pure and subordinate to the main object model
 
+Constructor/factory check:
+- if the helper only exists because the object never internalized behavior that depends on its own fields, move that behavior into the object
+- if `fromX` only wraps `new X(...)` plus null checks or argument shuffling, it is usually not a real factory
+
 <a id="class-wrappers-over-data"></a>
 ### Class Wrappers Over Data
 
@@ -321,6 +407,7 @@ For the same scenarios, the agent should:
 - use policies and composition where variation is real
 - reject interfaces or inheritance that do not protect a boundary
 - when OOP is justified, prefer explicit object construction and owned methods over helper-first mutation
+- keep constructor-first creation as the default and justify any named/static factory with a real semantic distinction
 - include at least one explicit "when not to use OOP here" comparison
 - name the likely anti-pattern if the design starts drifting toward ceremony
 
@@ -328,8 +415,10 @@ For the same scenarios, the agent should:
 
 - The answer explains why an object exists, not just what noun it represents.
 - The answer explains how the important object is constructed in a valid state.
+- The answer can justify every named/static factory as more than a constructor alias or null-filter wrapper.
 - The answer identifies where invalid state or policy violation is prevented.
 - The answer keeps core mutable state behind the object instead of exporting writable records.
+- The answer does not leave object-owned behavior stranded in file-level helpers that only depend on the object's own state.
 - SOLID is used to critique the design, not to force additional abstractions.
 - Anti-patterns such as anemic models, god services, or interface cargo culting are called out explicitly when relevant.
 - The answer retains simple non-OOP structures where they are better.
@@ -341,3 +430,4 @@ For the same scenarios, the agent should:
 - "Inheritance keeps things DRY" used without proving substitutability.
 - "Everything should be an object in a proper architecture" used as a premise.
 - "These helpers are basically methods anyway" used to excuse exported procedural control over domain state.
+- "`fromX` reads nicer than `new X(...)`" used to justify a factory that adds no semantic distinction.
